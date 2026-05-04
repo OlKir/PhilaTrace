@@ -3,50 +3,93 @@ import Combine
 
 @MainActor
 final class AlbumsStore: ObservableObject {
-    @Published private(set) var albums: [StampsAlbum]
+    @Published private(set) var albums: [StampsAlbum] = []
+    @Published var errorMessage: String?
 
-    init(albums: [StampsAlbum]? = nil) {
-        self.albums = albums ?? StampsAlbum.samples
+    private let repository: AlbumsRepository
+    private var listener: (any AlbumsRepositoryListener)?
+
+    init(repository: AlbumsRepository = AlbumsRepositoryFactory.makeDefault()) {
+        self.repository = repository
+        startObserving()
+    }
+
+    deinit {
+        listener?.remove()
+    }
+
+    func startObserving() {
+        listener?.remove()
+        listener = repository.observeAlbums { [weak self] albums in
+            guard let self else { return }
+            Task { @MainActor in
+              self.albums = [StampsAlbum.samples[0]]
+              self.albums.append(contentsOf: albums)
+                self.errorMessage = nil
+            }
+        } onError: { [weak self] error in
+            guard let self else { return }
+            Task { @MainActor in
+                self.errorMessage = error.localizedDescription
+            }
+        }
     }
 
     @discardableResult
-    func addAlbum(title: String, yearRange: String, coverStyle: AlbumCoverStyle) -> Bool {
+    func addAlbum(title: String, yearRange: String, coverStyle: AlbumCoverStyle) async -> Bool {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedYearRange = yearRange.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else { return false }
 
-        albums.insert(
-            StampsAlbum(
-                id: UUID(),
-                title: trimmedTitle,
-                yearRange: trimmedYearRange,
-                itemCount: 0,
-                coverStyle: coverStyle,
-                pages: []
-            ),
-            at: 0
+        let album = StampsAlbum(
+            id: UUID().uuidString,
+            title: trimmedTitle,
+            yearRange: trimmedYearRange,
+            itemCount: 0,
+            coverStyle: coverStyle,
+            pages: []
         )
+
+        do {
+            try await repository.createAlbum(album)
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
         return true
     }
 
-    func deleteAlbum(id: UUID) {
-        albums.removeAll { $0.id == id }
+    func deleteAlbum(id: String) async {
+        do {
+            try await repository.deleteAlbum(id: id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 
     @discardableResult
-    func updateAlbum(id: UUID, title: String, yearRange: String, coverStyle: AlbumCoverStyle) -> Bool {
+    func updateAlbum(id: String, title: String, yearRange: String, coverStyle: AlbumCoverStyle) async -> Bool {
         let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedYearRange = yearRange.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else { return false }
 
         guard let index = albums.firstIndex(where: { $0.id == id }) else { return false }
-        albums[index].title = trimmedTitle
-        albums[index].yearRange = trimmedYearRange
-        albums[index].coverStyle = coverStyle
-        return true
+
+        var updated = albums[index]
+        updated.title = trimmedTitle
+        updated.yearRange = trimmedYearRange
+        updated.coverStyle = coverStyle
+
+        do {
+            try await repository.updateAlbum(updated)
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
     }
 
-    func album(id: UUID) -> StampsAlbum? {
+    func album(id: String) -> StampsAlbum? {
         albums.first { $0.id == id }
     }
 }
