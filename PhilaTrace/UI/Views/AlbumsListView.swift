@@ -6,14 +6,14 @@ struct AlbumsListView: View {
 
     private enum AlbumsSheet: Identifiable, Equatable {
         case add
-        case edit(UUID)
+        case edit(String)
 
         var id: String {
             switch self {
             case .add:
                 return "add"
             case .edit(let id):
-                return "edit-\(id.uuidString)"
+                return "edit-\(id)"
             }
         }
     }
@@ -37,7 +37,9 @@ struct AlbumsListView: View {
                                 AlbumCardView(
                                     album: album,
                                     onEdit: { activeSheet = .edit(album.id) },
-                                    onDelete: { albumsStore.deleteAlbum(id: album.id) }
+                                    onDelete: {
+                                        Task { await albumsStore.deleteAlbum(id: album.id) }
+                                    }
                                 )
                             }
                             .buttonStyle(.plain)
