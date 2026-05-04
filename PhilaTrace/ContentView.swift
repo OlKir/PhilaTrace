@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var albumsStore = AlbumsStore()
+    @State private var isShowingError = false
 
     var body: some View {
         NavigationStack {
@@ -17,6 +18,14 @@ struct ContentView: View {
                 .toolbarBackground(.hidden, for: .navigationBar)
         }
         .environmentObject(albumsStore)
+        .onChange(of: albumsStore.errorMessage) { newValue in
+            isShowingError = newValue != nil
+        }
+        .alert("Firestore Error", isPresented: $isShowingError) {
+            Button("OK") { albumsStore.errorMessage = nil }
+        } message: {
+            Text(albumsStore.errorMessage ?? "Unknown error")
+        }
     }
 }
 
