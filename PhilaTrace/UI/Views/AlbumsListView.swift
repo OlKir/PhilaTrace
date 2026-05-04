@@ -2,7 +2,21 @@ import SwiftUI
 
 struct AlbumsListView: View {
     @EnvironmentObject private var albumsStore: AlbumsStore
-    @State private var isPresentingAddAlbum: Bool = false
+    @State private var activeSheet: AlbumsSheet?
+
+    private enum AlbumsSheet: Identifiable, Equatable {
+        case add
+        case edit(UUID)
+
+        var id: String {
+            switch self {
+            case .add:
+                return "add"
+            case .edit(let id):
+                return "edit-\(id.uuidString)"
+            }
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -15,7 +29,11 @@ struct AlbumsListView: View {
 
                     VStack(spacing: 16) {
                         ForEach(albumsStore.albums) { album in
-                            AlbumCardView(album: album)
+                            AlbumCardView(
+                                album: album,
+                                onEdit: { activeSheet = .edit(album.id) },
+                                onDelete: { albumsStore.deleteAlbum(id: album.id) }
+                            )
                         }
                     }
                 }
@@ -25,7 +43,7 @@ struct AlbumsListView: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button { isPresentingAddAlbum = true } label: {
+                Button { activeSheet = .add } label: {
                     Image(systemName: "plus")
                         .font(.system(.headline, design: .rounded).weight(.bold))
                         .foregroundStyle(LiquidTheme.primaryGlow)
@@ -35,13 +53,30 @@ struct AlbumsListView: View {
                 .accessibilityLabel("Add album")
             }
         }
-        .sheet(isPresented: $isPresentingAddAlbum) {
+        .sheet(item: $activeSheet) { sheet in
             NavigationStack {
-                AddNewAlbumView()
-                    .navigationBarTitleDisplayMode(.inline)
+                sheetView(sheet)
                     .toolbarBackground(.hidden, for: .navigationBar)
             }
             .environmentObject(albumsStore)
+        }
+    }
+
+    @ViewBuilder
+    private func sheetView(_ sheet: AlbumsSheet) -> some View {
+        switch sheet {
+        case .add:
+            AddNewAlbumView(mode: .add)
+                .navigationBarTitleDisplayMode(.inline)
+        case .edit(let id):
+            if let album = albumsStore.album(id: id) {
+                AddNewAlbumView(mode: .edit(album))
+                    .navigationBarTitleDisplayMode(.inline)
+            } else {
+                Text("Album not found")
+                    .liquidForeground()
+                    .navigationBarTitleDisplayMode(.inline)
+            }
         }
     }
 
@@ -61,6 +96,8 @@ struct AlbumsListView: View {
 
 private struct AlbumCardView: View {
     let album: StampsAlbum
+    let onEdit: () -> Void
+    let onDelete: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -101,13 +138,15 @@ private struct AlbumCardView: View {
 
                 Spacer()
 
-                Button { } label: {
+                Menu {
+                    Button("Edit") { onEdit() }
+                    Button("Delete", role: .destructive) { onDelete() }
+                } label: {
                     Image(systemName: "ellipsis")
                         .font(.system(.title3, design: .rounded).weight(.semibold))
                         .foregroundStyle(LiquidTheme.primaryGlow.opacity(0.65))
                         .padding(10)
                 }
-                .buttonStyle(.plain)
                 .accessibilityLabel("More options")
             }
             .padding(18)

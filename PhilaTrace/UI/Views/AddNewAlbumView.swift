@@ -1,12 +1,32 @@
 import SwiftUI
 
 struct AddNewAlbumView: View {
+    enum Mode: Equatable {
+        case add
+        case edit(StampsAlbum)
+    }
+
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var albumsStore: AlbumsStore
 
     @State private var albumTitle: String = ""
     @State private var yearRange: String = ""
     @State private var selectedCoverStyle: AlbumCoverStyle = .aurora
+
+    private let mode: Mode
+
+    init(mode: Mode = .add) {
+        self.mode = mode
+
+        switch mode {
+        case .add:
+            break
+        case .edit(let album):
+            _albumTitle = State(initialValue: album.title)
+            _yearRange = State(initialValue: album.yearRange)
+            _selectedCoverStyle = State(initialValue: album.coverStyle)
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -31,8 +51,6 @@ struct AddNewAlbumView: View {
                             text: $yearRange
                         )
 
-                        collectionType
-
                         createButton
                             .padding(.top, 6)
                     }
@@ -46,7 +64,7 @@ struct AddNewAlbumView: View {
                 Button("Cancel") { dismiss() }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Create") { createAlbum() }
+                Button(submitButtonTitle) { submit() }
                     .fontWeight(.semibold)
             }
         }
@@ -94,37 +112,11 @@ struct AddNewAlbumView: View {
         .liquidGlass(cornerRadius: 26)
     }
 
-    private var collectionType: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Collection Type")
-                .font(.system(.caption2).weight(.bold))
-                .tracking(2.4)
-                .textCase(.uppercase)
-                .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.85))
-                .padding(.leading, 4)
-
-            HStack(spacing: 14) {
-                CollectionTypeCard(
-                    title: "Curated",
-                    subtitle: "Thematic",
-                    systemImage: "sparkles",
-                    isSelected: selectedCoverStyle == .aurora,
-                    onTap: { selectedCoverStyle = .aurora }
-                )
-                CollectionTypeCard(
-                    title: "Chronicle",
-                    subtitle: "By Issue",
-                    systemImage: "clock",
-                    isSelected: selectedCoverStyle == .sunset,
-                    onTap: { selectedCoverStyle = .sunset }
-                )
-            }
-        }
-    }
+    
 
     private var createButton: some View {
-        Button { createAlbum() } label: {
-            Text("Create Album")
+        Button { submit() } label: {
+            Text(submitButtonTitle.uppercased())
                 .font(.system(.callout).weight(.bold))
                 .tracking(2.2)
                 .textCase(.uppercase)
@@ -144,8 +136,25 @@ struct AddNewAlbumView: View {
         .buttonStyle(.plain)
     }
 
-    private func createAlbum() {
-        if albumsStore.addAlbum(title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle) {
+    private var submitButtonTitle: String {
+        switch mode {
+        case .add:
+            return "Create"
+        case .edit:
+            return "Save"
+        }
+    }
+
+    private func submit() {
+        let didSubmit: Bool
+        switch mode {
+        case .add:
+            didSubmit = albumsStore.addAlbum(title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle)
+        case .edit(let album):
+            didSubmit = albumsStore.updateAlbum(id: album.id, title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle)
+        }
+
+        if didSubmit {
             dismiss()
         }
     }
