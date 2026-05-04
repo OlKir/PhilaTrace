@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AlbumDetailsView: View {
+    let album: StampsAlbum
+
     private let pageCards: [AlbumPageCard] = [
         AlbumPageCard(title: "Great Britain (1840–41)", subtitle: "12 Stamps Mounted", style: .aurora),
         AlbumPageCard(title: "Canada & Provinces", subtitle: "8 Stamps Mounted", style: .sunset),
@@ -70,12 +72,12 @@ struct AlbumDetailsView: View {
     private var topHero: some View {
         HStack(alignment: .top, spacing: 14) {
             VStack(alignment: .leading, spacing: 12) {
-                Text("European Classics")
+                Text(album.title)
                     .font(.system(.largeTitle, design: .rounded).weight(.bold))
                     .glossyText()
 
                 HStack(spacing: 10) {
-                    Text("1840—1901".uppercased())
+                    Text(album.yearRange.uppercased())
                         .font(.system(.caption).weight(.semibold))
                         .tracking(2.0)
                         .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
@@ -84,7 +86,7 @@ struct AlbumDetailsView: View {
                         Circle()
                             .fill(LiquidTheme.primaryGlow)
                             .frame(width: 6, height: 6)
-                        Text("428 STAMPS")
+                        Text("\(album.itemCount) STAMPS")
                             .font(.system(.caption).weight(.semibold))
                             .tracking(2.0)
                             .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
@@ -268,6 +270,8 @@ private struct NewPagePlaceholderView: View {
 }
 
 #Preview {
-    AlbumDetailsView()
+    NavigationStack {
+        AlbumDetailsView(album: StampsAlbum.samples[0])
+            .toolbarBackground(.hidden, for: .navigationBar)
+    }
 }
-

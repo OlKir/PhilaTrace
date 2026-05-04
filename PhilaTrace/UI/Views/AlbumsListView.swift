@@ -29,11 +29,18 @@ struct AlbumsListView: View {
 
                     VStack(spacing: 16) {
                         ForEach(albumsStore.albums) { album in
-                            AlbumCardView(
-                                album: album,
-                                onEdit: { activeSheet = .edit(album.id) },
-                                onDelete: { albumsStore.deleteAlbum(id: album.id) }
-                            )
+                            NavigationLink {
+                                AlbumDetailsView(album: album)
+                                    .navigationBarTitleDisplayMode(.inline)
+                                    .toolbarBackground(.hidden, for: .navigationBar)
+                            } label: {
+                                AlbumCardView(
+                                    album: album,
+                                    onEdit: { activeSheet = .edit(album.id) },
+                                    onDelete: { albumsStore.deleteAlbum(id: album.id) }
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
                 }

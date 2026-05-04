@@ -6,7 +6,7 @@ struct DesignShowcaseView: View {
             AlbumsListView()
                 .tabItem { Label("Albums", systemImage: "square.grid.2x2") }
 
-            AlbumDetailsView()
+            AlbumDetailsView(album: StampsAlbum.samples[0])
                 .tabItem { Label("Details", systemImage: "rectangle.stack") }
 
             AddNewAlbumView()
@@ -22,4 +22,3 @@ struct DesignShowcaseView: View {
 #Preview {
     DesignShowcaseView()
 }
-
