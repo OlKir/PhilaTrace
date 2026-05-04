@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AlbumDetailsView: View {
     let album: StampsAlbum
+    @State private var isPresentingAddPage = false
 
     var body: some View {
         ZStack {
@@ -31,6 +32,9 @@ struct AlbumDetailsView: View {
         }
         .navigationTitle("Album Details")
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $isPresentingAddPage) {
+            AddPageView()
+        }
     }
 
     private var topHero: some View {
@@ -134,8 +138,7 @@ struct AlbumDetailsView: View {
     }
 
     private var stickyCTA: some View {
-        VStack(spacing: 0) {
-            Button { } label: {
+            Button { isPresentingAddPage = true } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 18, weight: .bold))
@@ -147,15 +150,11 @@ struct AlbumDetailsView: View {
                 .foregroundStyle(LiquidTheme.surface)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(LiquidTheme.primary.opacity(0.92))
-                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                .shadow(color: .black.opacity(0.35), radius: 26, x: 0, y: 18)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.glass)
             .padding(.horizontal, 24)
             .padding(.vertical, 14)
-            .background(.ultraThinMaterial)
-        }
+        
     }
 }
 
