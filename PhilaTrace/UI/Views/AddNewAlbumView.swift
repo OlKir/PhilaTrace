@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct AddNewAlbumView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var albumsStore: AlbumsStore
+
     @State private var albumTitle: String = ""
     @State private var yearRange: String = ""
+    @State private var selectedCoverStyle: AlbumCoverStyle = .aurora
 
     var body: some View {
         ZStack {
@@ -36,38 +40,15 @@ struct AddNewAlbumView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 140)
             }
-            .safeAreaInset(edge: .top) {
-                topBar
-            }
         }
-    }
-
-    private var topBar: some View {
-        HStack(spacing: 12) {
-            Button { } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(.headline, design: .rounded).weight(.semibold))
-                    .foregroundStyle(LiquidTheme.primaryGlow)
-                    .frame(width: 40, height: 40)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-                    }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Cancel") { dismiss() }
             }
-            .buttonStyle(.plain)
-
-            Text("New Album")
-                .font(.system(.headline, design: .rounded).weight(.semibold))
-                .foregroundStyle(.white)
-
-            Spacer()
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 14)
-        .background(.ultraThinMaterial)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(.white.opacity(0.08)).frame(height: 1)
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Create") { createAlbum() }
+                    .fontWeight(.semibold)
+            }
         }
     }
 
@@ -127,20 +108,22 @@ struct AddNewAlbumView: View {
                     title: "Curated",
                     subtitle: "Thematic",
                     systemImage: "sparkles",
-                    isSelected: true
+                    isSelected: selectedCoverStyle == .aurora,
+                    onTap: { selectedCoverStyle = .aurora }
                 )
                 CollectionTypeCard(
                     title: "Chronicle",
                     subtitle: "By Issue",
                     systemImage: "clock",
-                    isSelected: false
+                    isSelected: selectedCoverStyle == .sunset,
+                    onTap: { selectedCoverStyle = .sunset }
                 )
             }
         }
     }
 
     private var createButton: some View {
-        Button { } label: {
+        Button { createAlbum() } label: {
             Text("Create Album")
                 .font(.system(.callout).weight(.bold))
                 .tracking(2.2)
@@ -159,6 +142,12 @@ struct AddNewAlbumView: View {
                 .shadow(color: LiquidTheme.primaryGlow.opacity(0.25), radius: 26, x: 0, y: 18)
         }
         .buttonStyle(.plain)
+    }
+
+    private func createAlbum() {
+        if albumsStore.addAlbum(title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle) {
+            dismiss()
+        }
     }
 }
 
@@ -202,9 +191,10 @@ private struct CollectionTypeCard: View {
     let subtitle: String
     let systemImage: String
     let isSelected: Bool
+    var onTap: (() -> Void)?
 
     var body: some View {
-        Button { } label: {
+        Button { onTap?() } label: {
             HStack(spacing: 12) {
                 Image(systemName: systemImage)
                     .font(.system(.title3, design: .rounded).weight(.semibold))
@@ -238,6 +228,9 @@ private struct CollectionTypeCard: View {
 }
 
 #Preview {
-    AddNewAlbumView()
+    NavigationStack {
+        AddNewAlbumView()
+            .toolbarBackground(.hidden, for: .navigationBar)
+    }
+    .environmentObject(AlbumsStore())
 }
-

@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct AlbumsListView: View {
-    private let albums = AlbumUIModel.samples
+    @EnvironmentObject private var albumsStore: AlbumsStore
+    @State private var isPresentingAddAlbum: Bool = false
 
     var body: some View {
         ZStack {
@@ -13,7 +14,7 @@ struct AlbumsListView: View {
                         .padding(.top, 8)
 
                     VStack(spacing: 16) {
-                        ForEach(albums) { album in
+                        ForEach(albumsStore.albums) { album in
                             AlbumCardView(album: album)
                         }
                     }
@@ -24,7 +25,7 @@ struct AlbumsListView: View {
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button { } label: {
+                Button { isPresentingAddAlbum = true } label: {
                     Image(systemName: "plus")
                         .font(.system(.headline, design: .rounded).weight(.bold))
                         .foregroundStyle(LiquidTheme.primaryGlow)
@@ -33,6 +34,14 @@ struct AlbumsListView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel("Add album")
             }
+        }
+        .sheet(isPresented: $isPresentingAddAlbum) {
+            NavigationStack {
+                AddNewAlbumView()
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbarBackground(.hidden, for: .navigationBar)
+            }
+            .environmentObject(albumsStore)
         }
     }
 
@@ -51,7 +60,7 @@ struct AlbumsListView: View {
 }
 
 private struct AlbumCardView: View {
-    let album: AlbumUIModel
+    let album: StampsAlbum
 
     var body: some View {
         VStack(spacing: 0) {
@@ -66,7 +75,7 @@ private struct AlbumCardView: View {
                 Text(album.itemCountText.uppercased())
                     .font(.system(.caption2).weight(.bold))
                     .tracking(2.5)
-                    .foregroundStyle(LiquidTheme.primaryGlow)
+                    .foregroundStyle(LiquidTheme.primary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(.thinMaterial, in: Capsule())
@@ -127,7 +136,7 @@ private struct AlbumCardView: View {
     }
 
     private var coverGradient: LinearGradient {
-        switch album.cover {
+        switch album.coverStyle {
         case .aurora:
             LinearGradient(colors: [LiquidTheme.primaryGlow.opacity(0.55), Color.purple.opacity(0.35), LiquidTheme.surface], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .sunset:

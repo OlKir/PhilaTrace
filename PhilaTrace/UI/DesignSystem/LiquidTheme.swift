@@ -1,14 +1,14 @@
 import SwiftUI
 
 enum LiquidTheme {
-    static let surface = Color(red: 0x13 / 255, green: 0x13 / 255, blue: 0x15 / 255)
-    static let onSurface = Color(red: 0xE5 / 255, green: 0xE1 / 255, blue: 0xE4 / 255)
-    static let onSurfaceVariant = Color(red: 0xB9 / 255, green: 0xCA / 255, blue: 0xCB / 255)
+    static let surface = Color(red: 19 / 255, green: 19 / 255, blue: 21 / 255)
+    static let onSurface = Color(red: 229 / 255, green: 225 / 255, blue: 228 / 255)
+    static let onSurfaceVariant = Color(red: 185 / 255, green: 202 / 255, blue: 203 / 255)
 
-    static let primary = Color(red: 0xDB / 255, green: 0xFC / 255, blue: 0xFF / 255)
-    static let primaryGlow = Color(red: 0x00 / 255, green: 0xDB / 255, blue: 0xE9 / 255)
-    static let secondaryGlow = Color(red: 0xFF / 255, green: 0x2F / 255, blue: 0xD6 / 255)
-    static let tertiaryGlow = Color(red: 0x00 / 255, green: 0xF7 / 255, blue: 0xA6 / 255)
+    static let primary = Color(red: 219 / 255, green: 252 / 255, blue: 255 / 255)
+    static let primaryGlow = Color(red: 0 / 255, green: 219 / 255, blue: 233 / 255)
+    static let secondaryGlow = Color(red: 255 / 255, green: 47 / 255, blue: 214 / 255)
+    static let tertiaryGlow = Color(red: 0 / 255, green: 247 / 255, blue: 166 / 255)
 }
 
 extension View {
@@ -16,4 +16,3 @@ extension View {
         foregroundStyle(LiquidTheme.onSurface)
     }
 }
-
