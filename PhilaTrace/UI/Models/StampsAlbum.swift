@@ -1,6 +1,6 @@
 import Foundation
 
-struct StampsAlbum: Identifiable, Codable, Equatable {
+struct StampsAlbum: Identifiable, Equatable {
     let id: String
     var title: String
     var yearRange: String
@@ -31,6 +31,29 @@ enum AlbumCoverStyle: String, Codable, CaseIterable {
     case emerald
 }
 
+struct FirestoreAlbum: Identifiable, Codable, Equatable {
+    let id: String
+    var title: String
+    var yearRange: String
+    var itemCount: Int
+    var coverStyle: AlbumCoverStyle
+}
+
+extension StampsAlbum {
+    init(firestoreAlbum: FirestoreAlbum, pages: [AlbumPage] = []) {
+        id = firestoreAlbum.id
+        title = firestoreAlbum.title
+        yearRange = firestoreAlbum.yearRange
+        itemCount = firestoreAlbum.itemCount
+        coverStyle = firestoreAlbum.coverStyle
+        self.pages = pages
+    }
+
+    var asFirestoreAlbum: FirestoreAlbum {
+        FirestoreAlbum(id: id, title: title, yearRange: yearRange, itemCount: itemCount, coverStyle: coverStyle)
+    }
+}
+
 extension StampsAlbum {
     var itemCountText: String {
         "\(itemCount) Items"
@@ -48,7 +71,7 @@ extension AlbumPage {
 extension StampsAlbum {
     static let samples: [StampsAlbum] = [
         StampsAlbum(
-            id: UUID(),
+            id: UUID().uuidString,
             title: "Classic Europe",
             yearRange: "1900–1945",
             itemCount: 128,
