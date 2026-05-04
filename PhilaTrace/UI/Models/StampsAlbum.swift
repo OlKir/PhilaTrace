@@ -21,6 +21,14 @@ extension StampsAlbum {
 }
 
 extension StampsAlbum {
-    static let samples: [StampsAlbum] = []
+    static let samples: [StampsAlbum] = [
+        StampsAlbum(
+            id: UUID(),
+            title: "Classic Europe",
+            yearRange: "1900–1945",
+            itemCount: 128,
+            coverStyle: .aurora
+        )
+    ]
 }
 
