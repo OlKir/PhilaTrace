@@ -45,7 +45,8 @@ final class AlbumsStore: ObservableObject {
             title: trimmedTitle,
             yearRange: trimmedYearRange,
             itemCount: 0,
-            coverStyle: coverStyle
+            coverStyle: coverStyle,
+            pages: []
         )
 
         do {

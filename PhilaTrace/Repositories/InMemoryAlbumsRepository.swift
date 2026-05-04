@@ -4,7 +4,7 @@ actor InMemoryAlbumsRepository: AlbumsRepository {
     private var albums: [StampsAlbum]
     private var observers: [UUID: @Sendable ([StampsAlbum]) -> Void] = [:]
 
-    init(albums: [StampsAlbum] = StampsAlbum.samples) {
+    init(albums: [StampsAlbum] = []) {
         self.albums = albums
     }
 
@@ -69,4 +69,3 @@ private final class InMemoryListener: AlbumsRepositoryListener {
         onRemove()
     }
 }
-

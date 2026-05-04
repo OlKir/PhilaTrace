@@ -30,7 +30,8 @@ final class FirestoreAlbumsRepository: AlbumsRepository {
                 }
 
                 let albums: [StampsAlbum] = snapshot.documents.compactMap { document in
-                    try? document.data(as: StampsAlbum.self)
+                    guard let firestoreAlbum = try? document.data(as: FirestoreAlbum.self) else { return nil }
+                    return StampsAlbum(firestoreAlbum: firestoreAlbum)
                 }
                 onChange(albums)
             }
@@ -39,11 +40,11 @@ final class FirestoreAlbumsRepository: AlbumsRepository {
     }
 
     func createAlbum(_ album: StampsAlbum) async throws {
-        try albumsCollection.document(album.id).setData(from: album)
+        try albumsCollection.document(album.id).setData(from: album.asFirestoreAlbum)
     }
 
     func updateAlbum(_ album: StampsAlbum) async throws {
-        try albumsCollection.document(album.id).setData(from: album, merge: true)
+        try albumsCollection.document(album.id).setData(from: album.asFirestoreAlbum, merge: true)
     }
 
     func deleteAlbum(id: String) async throws {
@@ -62,4 +63,3 @@ private final class FirestoreListener: AlbumsRepositoryListener {
         registration.remove()
     }
 }
-
