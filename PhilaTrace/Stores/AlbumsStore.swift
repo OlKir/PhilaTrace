@@ -5,8 +5,8 @@ import Combine
 final class AlbumsStore: ObservableObject {
     @Published private(set) var albums: [StampsAlbum]
 
-    init(albums: [StampsAlbum] = StampsAlbum.samples) {
-        self.albums = albums
+    init(albums: [StampsAlbum]? = nil) {
+        self.albums = albums ?? StampsAlbum.samples
     }
 
     @discardableResult
@@ -21,7 +21,8 @@ final class AlbumsStore: ObservableObject {
                 title: trimmedTitle,
                 yearRange: trimmedYearRange,
                 itemCount: 0,
-                coverStyle: coverStyle
+                coverStyle: coverStyle,
+                pages: []
             ),
             at: 0
         )

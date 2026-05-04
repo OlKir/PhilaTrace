@@ -3,12 +3,6 @@ import SwiftUI
 struct AlbumDetailsView: View {
     let album: StampsAlbum
 
-    private let pageCards: [AlbumPageCard] = [
-        AlbumPageCard(title: "Great Britain (1840–41)", subtitle: "12 Stamps Mounted", style: .aurora),
-        AlbumPageCard(title: "Canada & Provinces", subtitle: "8 Stamps Mounted", style: .sunset),
-        AlbumPageCard(title: "Australian States", subtitle: "24 Stamps Mounted", style: .emerald),
-    ]
-
     var body: some View {
         ZStack {
             LiquidBackgroundView()
@@ -26,47 +20,17 @@ struct AlbumDetailsView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 140)
             }
-            .safeAreaInset(edge: .top) {
-                topBar
-            }
             .overlay(alignment: .bottomTrailing) {
                 floatingAction
                     .padding(.trailing, 24)
-                    .padding(.bottom, 120)
+                    .padding(.bottom, 40)
             }
             .safeAreaInset(edge: .bottom) {
                 stickyCTA
             }
         }
-    }
-
-    private var topBar: some View {
-        HStack(spacing: 12) {
-            Button { } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(.headline, design: .rounded).weight(.semibold))
-                    .foregroundStyle(LiquidTheme.primaryGlow)
-                    .frame(width: 40, height: 40)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-                    }
-            }
-            .buttonStyle(.plain)
-
-            Text("Album Details")
-                .font(.system(.headline, design: .rounded).weight(.semibold))
-                .foregroundStyle(.white)
-
-            Spacer()
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 14)
-        .background(.ultraThinMaterial)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(.white.opacity(0.08)).frame(height: 1)
-        }
+        .navigationTitle("Album Details")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var topHero: some View {
@@ -142,8 +106,13 @@ struct AlbumDetailsView: View {
             }
 
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
-                ForEach(pageCards) { page in
-                    AlbumPageCardView(page: page)
+                ForEach(album.pages) { page in
+                    NavigationLink {
+                        AlbumPageView(page: page)
+                    } label: {
+                        AlbumPageCardView(page: page)
+                    }
+                    .buttonStyle(.plain)
                 }
                 NewPagePlaceholderView()
             }
@@ -190,21 +159,23 @@ struct AlbumDetailsView: View {
     }
 }
 
-private struct AlbumPageCard: Identifiable {
-    let id = UUID()
-    let title: String
-    let subtitle: String
-    let style: AlbumCoverStyle
-}
-
 private struct AlbumPageCardView: View {
-    let page: AlbumPageCard
+    let page: AlbumPage
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(gradient)
+            Color.clear
                 .aspectRatio(3 / 4, contentMode: .fit)
+                .overlay {
+                    if let imageName = page.imageName {
+                        Image(imageName)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Rectangle().fill(gradient)
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .strokeBorder(.white.opacity(0.10), lineWidth: 1)
@@ -219,7 +190,7 @@ private struct AlbumPageCardView: View {
                 .foregroundStyle(LiquidTheme.primary.opacity(0.9))
                 .lineLimit(1)
 
-            Text(page.subtitle.uppercased())
+            Text(page.mountedCountText.uppercased())
                 .font(.system(.caption2).weight(.bold))
                 .tracking(2.0)
                 .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.85))
@@ -230,7 +201,7 @@ private struct AlbumPageCardView: View {
     }
 
     private var gradient: LinearGradient {
-        switch page.style {
+        switch page.coverStyle {
         case .aurora:
             LinearGradient(colors: [LiquidTheme.primaryGlow.opacity(0.45), Color.purple.opacity(0.30), LiquidTheme.surface], startPoint: .topLeading, endPoint: .bottomTrailing)
         case .sunset:
