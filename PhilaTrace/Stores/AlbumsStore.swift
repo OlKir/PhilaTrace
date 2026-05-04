@@ -23,7 +23,8 @@ final class AlbumsStore: ObservableObject {
         listener = repository.observeAlbums { [weak self] albums in
             guard let self else { return }
             Task { @MainActor in
-                self.albums = albums
+              self.albums = [StampsAlbum.samples[0]]
+              self.albums.append(contentsOf: albums)
                 self.errorMessage = nil
             }
         } onError: { [weak self] error in
