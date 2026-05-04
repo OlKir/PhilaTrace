@@ -53,7 +53,13 @@ private struct StampCardView: View {
             Color.clear
                 .aspectRatio(3 / 4, contentMode: .fit)
                 .overlay {
-                    Rectangle().fill(gradient)
+                    if let imageName = stamp.imageName {
+                        Image(imageName)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Rectangle().fill(gradient)
+                    }
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                 .overlay {

@@ -23,6 +23,7 @@ struct Stamp: Identifiable, Equatable {
     var country: String
     var year: Int
     var coverStyle: AlbumCoverStyle
+    var imageName: String?
 }
 
 enum AlbumCoverStyle: CaseIterable {
@@ -60,9 +61,9 @@ extension StampsAlbum {
                     coverStyle: .aurora,
                     imageName: "Sample-page-1",
                     stamps: [
-                        Stamp(id: UUID(), title: "Penny Black", country: "Great Britain", year: 1840, coverStyle: .aurora),
-                        Stamp(id: UUID(), title: "Two Pence Blue", country: "Great Britain", year: 1840, coverStyle: .sunset),
-                        Stamp(id: UUID(), title: "Penny Red", country: "Great Britain", year: 1841, coverStyle: .emerald),
+                        Stamp(id: UUID(), title: "Penny Black", country: "Great Britain", year: 1840, coverStyle: .aurora, imageName: "Sample-stamp-1"),
+                        Stamp(id: UUID(), title: "Two Pence Blue", country: "Great Britain", year: 1840, coverStyle: .sunset, imageName: "Sample-stamp-2"),
+                        Stamp(id: UUID(), title: "Penny Red", country: "Great Britain", year: 1841, coverStyle: .emerald, imageName: "Sample-stamp-3"),
                     ]
                 ),
                 AlbumPage(
@@ -71,8 +72,8 @@ extension StampsAlbum {
                     coverStyle: .sunset,
                     imageName: "Sample-page-2",
                     stamps: [
-                        Stamp(id: UUID(), title: "Three Penny Beaver", country: "Canada", year: 1851, coverStyle: .sunset),
-                        Stamp(id: UUID(), title: "Six Pence Consort", country: "Canada", year: 1851, coverStyle: .aurora),
+                        Stamp(id: UUID(), title: "Three Penny Beaver", country: "Canada", year: 1851, coverStyle: .sunset, imageName: "Sample-stamp-4"),
+                        Stamp(id: UUID(), title: "Six Pence Consort", country: "Canada", year: 1851, coverStyle: .aurora, imageName: "Sample-stamp-5"),
                     ]
                 ),
                 AlbumPage(
@@ -81,10 +82,10 @@ extension StampsAlbum {
                     coverStyle: .emerald,
                     imageName: "Sample-page-3",
                     stamps: [
-                        Stamp(id: UUID(), title: "Sydney View", country: "New South Wales", year: 1850, coverStyle: .emerald),
-                        Stamp(id: UUID(), title: "Black Swan", country: "Western Australia", year: 1854, coverStyle: .aurora),
-                        Stamp(id: UUID(), title: "Half Length", country: "Victoria", year: 1850, coverStyle: .sunset),
-                        Stamp(id: UUID(), title: "Chalon Head", country: "Tasmania", year: 1855, coverStyle: .emerald),
+                        Stamp(id: UUID(), title: "Sydney View", country: "New South Wales", year: 1850, coverStyle: .emerald, imageName: "Sample-stamp-6"),
+                        Stamp(id: UUID(), title: "Black Swan", country: "Western Australia", year: 1854, coverStyle: .aurora, imageName: "Sample-stamp-1"),
+                        Stamp(id: UUID(), title: "Half Length", country: "Victoria", year: 1850, coverStyle: .sunset, imageName: "Sample-stamp-2"),
+                        Stamp(id: UUID(), title: "Chalon Head", country: "Tasmania", year: 1855, coverStyle: .emerald, imageName: "Sample-stamp-3"),
                     ]
                 ),
             ]
