@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AddPageView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var pageTitle: String = ""
     @State private var selectedTemplateIndex: Int = 0
 
@@ -55,7 +56,7 @@ struct AddPageView: View {
 
     private var topBar: some View {
         HStack(spacing: 12) {
-            Button { } label: {
+            Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(.headline, design: .rounded).weight(.semibold))
                     .foregroundStyle(LiquidTheme.primaryGlow)
@@ -241,4 +242,3 @@ private struct NewTemplatePlaceholderView: View {
 #Preview {
     AddPageView()
 }
-
