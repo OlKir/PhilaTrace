@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "firebase-firestore": {
+      "source": "firebase/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/firebase-firestore/SKILL.md",
+      "computedHash": "bddd29bdba14007357b972533cb29248911f78e2cc7156dc73b377a736a64ca5"
+    },
     "swift-concurrency": {
       "source": "avdlee/swift-concurrency-agent-skill",
       "sourceType": "github",
