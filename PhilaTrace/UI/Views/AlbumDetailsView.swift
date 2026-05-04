@@ -138,7 +138,6 @@ struct AlbumDetailsView: View {
     }
 
     private var stickyCTA: some View {
-        VStack(spacing: 0) {
             Button { isPresentingAddPage = true } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "plus.circle.fill")
@@ -155,7 +154,7 @@ struct AlbumDetailsView: View {
             .buttonStyle(.glass)
             .padding(.horizontal, 24)
             .padding(.vertical, 14)
-        }
+        
     }
 }
 
