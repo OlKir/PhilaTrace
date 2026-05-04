@@ -166,8 +166,17 @@ private struct AlbumCardView: View {
 
     @ViewBuilder
     private var cover: some View {
-        RoundedRectangle(cornerRadius: 22, style: .continuous)
-            .fill(coverGradient)
+        Color.clear
+            .overlay {
+                if let imageName = album.pages.first?.imageName {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Rectangle().fill(coverGradient)
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .strokeBorder(.white.opacity(0.10), lineWidth: 1)
@@ -179,8 +188,6 @@ private struct AlbumCardView: View {
                     .blur(radius: 30)
                     .offset(x: -70, y: -120)
             }
-            .padding(0)
-            .clipShape(Rectangle())
     }
 
     private var coverGradient: LinearGradient {

@@ -39,7 +39,12 @@ struct AlbumPageView: View {
     private var stampsSection: some View {
         LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
             ForEach(page.stamps) { stamp in
-                StampCardView(stamp: stamp)
+                NavigationLink {
+                    StampDetailView(stamp: stamp)
+                } label: {
+                    StampCardView(stamp: stamp)
+                }
+                .buttonStyle(.plain)
             }
         }
     }
