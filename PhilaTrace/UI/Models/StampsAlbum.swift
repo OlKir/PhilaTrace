@@ -1,7 +1,7 @@
 import Foundation
 
-struct StampsAlbum: Identifiable, Equatable {
-    let id: UUID
+struct StampsAlbum: Identifiable, Codable, Equatable {
+    let id: String
     var title: String
     var yearRange: String
     var itemCount: Int
@@ -25,7 +25,7 @@ struct Stamp: Identifiable, Equatable {
     var coverStyle: AlbumCoverStyle
 }
 
-enum AlbumCoverStyle: CaseIterable {
+enum AlbumCoverStyle: String, Codable, CaseIterable {
     case aurora
     case sunset
     case emerald
@@ -91,4 +91,3 @@ extension StampsAlbum {
         )
     ]
 }
-

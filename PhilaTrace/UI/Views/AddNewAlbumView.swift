@@ -146,16 +146,18 @@ struct AddNewAlbumView: View {
     }
 
     private func submit() {
-        let didSubmit: Bool
-        switch mode {
-        case .add:
-            didSubmit = albumsStore.addAlbum(title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle)
-        case .edit(let album):
-            didSubmit = albumsStore.updateAlbum(id: album.id, title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle)
-        }
+        Task {
+            let didSubmit: Bool
+            switch mode {
+            case .add:
+                didSubmit = await albumsStore.addAlbum(title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle)
+            case .edit(let album):
+                didSubmit = await albumsStore.updateAlbum(id: album.id, title: albumTitle, yearRange: yearRange, coverStyle: selectedCoverStyle)
+            }
 
-        if didSubmit {
-            dismiss()
+            if didSubmit {
+                dismiss()
+            }
         }
     }
 }
