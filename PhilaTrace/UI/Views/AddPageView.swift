@@ -1,48 +1,20 @@
 import SwiftUI
 
 struct AddPageView: View {
-    @State private var pageTitle: String = ""
-    @State private var selectedTemplateIndex: Int = 0
-
-    private let templates: [PageTemplateCard] = [
-        PageTemplateCard(title: "Classic Mount", subtitle: "Grid Layout", style: .aurora),
-        PageTemplateCard(title: "Showcase", subtitle: "Single Hero", style: .sunset),
-        PageTemplateCard(title: "Metadata", subtitle: "Notes + Grid", style: .emerald),
-    ]
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {
             LiquidBackgroundView()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    header
+                VStack(alignment: .leading, spacing: 28) {
+                    hero
                         .padding(.top, 12)
 
-                    FloatingTemplatePicker(selectedIndex: $selectedTemplateIndex)
+                    options
 
-                    pageTitleField
-
-                    templateGrid
-
-                    Button { } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: "plus.circle.fill")
-                                .font(.system(size: 18, weight: .bold))
-                            Text("Add Page")
-                                .font(.system(.caption).weight(.bold))
-                                .tracking(2.4)
-                                .textCase(.uppercase)
-                        }
-                        .foregroundStyle(LiquidTheme.surface)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 16)
-                        .background(LiquidTheme.primary.opacity(0.92))
-                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                        .shadow(color: .black.opacity(0.35), radius: 26, x: 0, y: 18)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.top, 8)
+                    footerTip
                 }
                 .padding(.horizontal, 24)
                 .padding(.bottom, 140)
@@ -55,7 +27,7 @@ struct AddPageView: View {
 
     private var topBar: some View {
         HStack(spacing: 12) {
-            Button { } label: {
+            Button { dismiss() } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(.headline, design: .rounded).weight(.semibold))
                     .foregroundStyle(LiquidTheme.primaryGlow)
@@ -68,7 +40,7 @@ struct AddPageView: View {
             }
             .buttonStyle(.plain)
 
-            Text("New Page")
+            Text("Add to Collection")
                 .font(.system(.headline, design: .rounded).weight(.semibold))
                 .foregroundStyle(.white)
 
@@ -82,163 +54,255 @@ struct AddPageView: View {
         }
     }
 
-    private var header: some View {
+    private var hero: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Add Album Page")
+            Text("Catalog Your Finds")
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .glossyText()
                 .accessibilityAddTraits(.isHeader)
 
-            Text("Choose a template and start mounting your next set of stamps.")
+            Text("Choose how you want to add new items to your digital archive.")
                 .font(.system(.body))
                 .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
         }
     }
 
-    private var pageTitleField: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Page Title")
-                .font(.system(.caption2).weight(.bold))
-                .tracking(2.4)
-                .textCase(.uppercase)
-                .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.85))
-                .padding(.leading, 4)
+    private var options: some View {
+        VStack(spacing: 18) {
+            PremiumAddOptionCard(
+                title: "Take Bulk Photos",
+                subtitle: "Instantly scan multiple pages and let AI identify your stamps.",
+                onTap: { }
+            )
 
-            TextField("e.g., Great Britain (1840-41)", text: $pageTitle)
-                .foregroundStyle(.white)
-                .tint(LiquidTheme.primaryGlow)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
-                .liquidGlass(cornerRadius: 18)
+            perforationDivider
+                .opacity(0.18)
+                .padding(.vertical, 2)
+
+            StandardAddOptionCard(
+                systemImage: "photo.on.rectangle.angled",
+                title: "Upload from Gallery",
+                subtitle: "Select high-resolution images from your device storage.",
+                showsChevron: true,
+                onTap: { }
+            )
+
+            ManualAddOptionCard(
+                systemImage: "square.and.pencil",
+                caption: "Manual Entry",
+                subtitle: "Add details without a photo first.",
+                onTap: { }
+            )
         }
     }
 
-    private var templateGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 14) {
-            ForEach(Array(templates.enumerated()), id: \.offset) { index, template in
-                PageTemplateCardView(template: template, isSelected: index == selectedTemplateIndex)
-            }
-            NewTemplatePlaceholderView()
-        }
-    }
-}
-
-private struct FloatingTemplatePicker: View {
-    @Binding var selectedIndex: Int
-
-    var body: some View {
-        HStack {
-            Text("Template")
-                .font(.system(.caption2).weight(.bold))
-                .tracking(2.4)
-                .textCase(.uppercase)
-                .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.85))
-
-            Spacer()
-
-            Button { } label: {
-                HStack(spacing: 6) {
-                    Text("Browse".uppercased())
-                        .font(.system(.caption2).weight(.bold))
-                        .tracking(2.2)
-                    Image(systemName: "chevron.down")
-                        .font(.system(size: 12, weight: .semibold))
-                }
-                .foregroundStyle(LiquidTheme.primary.opacity(0.6))
-            }
-            .buttonStyle(.plain)
+    private var footerTip: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "info.circle.fill")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(LiquidTheme.primaryGlow.opacity(0.7))
+            Text("Tip: Natural lighting works best for AI detection.")
+                .font(.system(.caption).weight(.medium))
+                .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .liquidGlass(cornerRadius: 22)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .background(.thinMaterial, in: Capsule())
+        .overlay {
+            Capsule().strokeBorder(.white.opacity(0.10), lineWidth: 1)
+        }
+        .accessibilityLabel("Tip: Natural lighting works best for AI detection.")
+    }
+
+    private var perforationDivider: some View {
+        HStack(spacing: 10) {
+            ForEach(0..<18, id: \.self) { _ in
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .fill(.white.opacity(0.10))
+                    .frame(width: 10, height: 4)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityHidden(true)
     }
 }
 
-private struct PageTemplateCard: Identifiable {
-    let id = UUID()
+private struct PremiumAddOptionCard: View {
     let title: String
     let subtitle: String
-    let style: AlbumCoverStyle
-}
-
-private struct PageTemplateCardView: View {
-    let template: PageTemplateCard
-    let isSelected: Bool
+    let onTap: () -> Void
 
     var body: some View {
-        Button { } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(gradient)
-                    .aspectRatio(1.05, contentMode: .fit)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 18, style: .continuous)
-                            .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .top, spacing: 14) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(LiquidTheme.primary.opacity(0.10))
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(LiquidTheme.primaryGlow.opacity(0.20), lineWidth: 1)
+                        Image(systemName: "camera.on.rectangle")
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundStyle(LiquidTheme.primaryGlow.opacity(0.9))
+                    }
+                    .frame(width: 52, height: 52)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(title)
+                            .font(.system(.title3, design: .rounded).weight(.semibold))
+                            .foregroundStyle(LiquidTheme.primary)
+                        Text(subtitle)
+                            .font(.system(.body))
+                            .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
-                Text(template.title)
-                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
+                    Spacer(minLength: 0)
+                }
 
-                Text(template.subtitle.uppercased())
+                    LiquidGlassPillButton(
+                        systemImage: "camera.fill",
+                        title: "LAUNCH SMART SCANNER",
+                        onTap: onTap
+                    )
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .liquidGlass(cornerRadius: 26)
+            .overlay(alignment: .topTrailing) {
+                Text("PREMIUM")
                     .font(.system(.caption2).weight(.bold))
                     .tracking(2.0)
-                    .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.85))
-                    .lineLimit(1)
-            }
-            .padding(14)
-            .liquidGlass(cornerRadius: 26)
-            .overlay {
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 26, style: .continuous)
-                        .strokeBorder(LiquidTheme.primaryGlow.opacity(0.35), lineWidth: 1)
-                }
+                    .foregroundStyle(LiquidTheme.onSurface)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(LiquidTheme.primaryGlow.opacity(0.95), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .padding(.trailing, 18)
+                    .offset(y: -10)
             }
         }
         .buttonStyle(.plain)
-    }
-
-    private var gradient: LinearGradient {
-        switch template.style {
-        case .aurora:
-            LinearGradient(colors: [LiquidTheme.primaryGlow.opacity(0.40), Color.purple.opacity(0.26), LiquidTheme.surface], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .sunset:
-            LinearGradient(colors: [LiquidTheme.secondaryGlow.opacity(0.38), Color.orange.opacity(0.24), LiquidTheme.surface], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case .emerald:
-            LinearGradient(colors: [LiquidTheme.tertiaryGlow.opacity(0.38), Color.teal.opacity(0.24), LiquidTheme.surface], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+        .accessibilityLabel("\(title). Premium option.")
     }
 }
 
-private struct NewTemplatePlaceholderView: View {
+private struct LiquidGlassPillButton: View {
+    let systemImage: String
+    let title: String
+    let onTap: () -> Void
+
     var body: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(LiquidTheme.primary.opacity(0.10))
-                    .frame(width: 56, height: 56)
-                Image(systemName: "plus")
-                    .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(LiquidTheme.primary)
+        Button(action: onTap) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.system(size: 18, weight: .bold))
+                Text(title)
+                    .font(.system(.caption).weight(.bold))
+                    .tracking(2.4)
+                    .textCase(.uppercase)
             }
-            Text("New")
-                .font(.system(.caption2).weight(.bold))
-                .tracking(2.4)
-                .textCase(.uppercase)
-                .foregroundStyle(LiquidTheme.primary.opacity(0.6))
+            .foregroundStyle(LiquidTheme.surface)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
         }
-        .frame(maxWidth: .infinity)
-        .aspectRatio(1.05, contentMode: .fit)
-        .padding(14)
-        .overlay {
-            RoundedRectangle(cornerRadius: 26, style: .continuous)
-                .strokeBorder(LiquidTheme.primary.opacity(0.22), style: StrokeStyle(lineWidth: 2, dash: [8, 8]))
+        .buttonStyle(.glass)
+    }
+}
+
+private struct StandardAddOptionCard: View {
+    let systemImage: String
+    let title: String
+    let subtitle: String
+    let showsChevron: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(alignment: .top, spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(.white.opacity(0.05))
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(.white.opacity(0.10), lineWidth: 1)
+                    Image(systemName: systemImage)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.75))
+                }
+                .frame(width: 52, height: 52)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.system(.title3, design: .rounded).weight(.semibold))
+                        .foregroundStyle(.white)
+                    Text(subtitle)
+                        .font(.system(.body))
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 0)
+
+                if showsChevron {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.35))
+                        .padding(.top, 6)
+                }
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .liquidGlass(cornerRadius: 26)
         }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct ManualAddOptionCard: View {
+    let systemImage: String
+    let caption: String
+    let subtitle: String
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(alignment: .top, spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(.white.opacity(0.05))
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(.white.opacity(0.06), lineWidth: 1)
+                    Image(systemName: systemImage)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.55))
+                }
+                .frame(width: 52, height: 52)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(caption.uppercased())
+                        .font(.system(.caption2).weight(.bold))
+                        .tracking(2.4)
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.8))
+                    Text(subtitle)
+                        .font(.system(.body))
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.65))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 0)
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.white.opacity(0.04), in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .strokeBorder(.white.opacity(0.10), style: StrokeStyle(lineWidth: 1.5, dash: [7, 7]))
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 
 #Preview {
     AddPageView()
 }
-
