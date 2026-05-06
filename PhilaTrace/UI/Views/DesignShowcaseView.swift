@@ -12,8 +12,10 @@ struct DesignShowcaseView: View {
             AddNewAlbumView()
                 .tabItem { Label("New Album", systemImage: "plus.rectangle.on.folder") }
 
-            AddPageView()
-                .tabItem { Label("New Page", systemImage: "doc.badge.plus") }
+            NavigationStack {
+                AddPageView()
+            }
+            .tabItem { Label("New Page", systemImage: "doc.badge.plus") }
         }
         .tint(LiquidTheme.primaryGlow)
     }

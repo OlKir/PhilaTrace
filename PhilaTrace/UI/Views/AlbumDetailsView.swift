@@ -2,7 +2,6 @@ import SwiftUI
 
 struct AlbumDetailsView: View {
     let album: StampsAlbum
-    @State private var isPresentingAddPage = false
 
     var body: some View {
         ZStack {
@@ -21,20 +20,13 @@ struct AlbumDetailsView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 140)
             }
-            .overlay(alignment: .bottomTrailing) {
-                floatingAction
-                    .padding(.trailing, 24)
-                    .padding(.bottom, 40)
-            }
             .safeAreaInset(edge: .bottom) {
                 stickyCTA
             }
         }
         .navigationTitle("Album Details")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $isPresentingAddPage) {
-            AddPageView()
-        }
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     private var topHero: some View {
@@ -123,22 +115,10 @@ struct AlbumDetailsView: View {
         }
     }
 
-    private var floatingAction: some View {
-        Button { } label: {
-            Image(systemName: "books.vertical.fill")
-                .font(.system(size: 28, weight: .bold))
-                .foregroundStyle(LiquidTheme.surface)
-                .frame(width: 64, height: 64)
-                .background(LiquidTheme.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .shadow(color: LiquidTheme.primaryGlow.opacity(0.35), radius: 20, x: 0, y: 10)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Add to library")
-    }
-
     private var stickyCTA: some View {
-            Button { isPresentingAddPage = true } label: {
+            NavigationLink {
+                AddPageView()
+            } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 18, weight: .bold))

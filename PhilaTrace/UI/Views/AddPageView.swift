@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddPageView: View {
-    @Environment(\.dismiss) private var dismiss
+    @State private var isPresentingExamplePaywall = false
 
     var body: some View {
         ZStack {
@@ -19,38 +19,14 @@ struct AddPageView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 140)
             }
-            .safeAreaInset(edge: .top) {
-                topBar
-            }
         }
-    }
-
-    private var topBar: some View {
-        HStack(spacing: 12) {
-            Button { dismiss() } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(.headline, design: .rounded).weight(.semibold))
-                    .foregroundStyle(LiquidTheme.primaryGlow)
-                    .frame(width: 40, height: 40)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(.white.opacity(0.12), lineWidth: 1)
-                    }
+        .navigationTitle("Add to Collection")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .fullScreenCover(isPresented: $isPresentingExamplePaywall) {
+            NavigationStack {
+                ExamplePaywallView()
             }
-            .buttonStyle(.plain)
-
-            Text("Add to Collection")
-                .font(.system(.headline, design: .rounded).weight(.semibold))
-                .foregroundStyle(.white)
-
-            Spacer()
-        }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 14)
-        .background(.ultraThinMaterial)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(.white.opacity(0.08)).frame(height: 1)
         }
     }
 
@@ -72,7 +48,7 @@ struct AddPageView: View {
             PremiumAddOptionCard(
                 title: "Take Bulk Photos",
                 subtitle: "Instantly scan multiple pages and let AI identify your stamps.",
-                onTap: { }
+                onPillTap: { isPresentingExamplePaywall = true }
             )
 
             perforationDivider
@@ -131,59 +107,56 @@ struct AddPageView: View {
 private struct PremiumAddOptionCard: View {
     let title: String
     let subtitle: String
-    let onTap: () -> Void
+    let onPillTap: () -> Void
 
     var body: some View {
-        Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(alignment: .top, spacing: 14) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(LiquidTheme.primary.opacity(0.10))
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .strokeBorder(LiquidTheme.primaryGlow.opacity(0.20), lineWidth: 1)
-                        Image(systemName: "camera.on.rectangle")
-                            .font(.system(size: 22, weight: .semibold))
-                            .foregroundStyle(LiquidTheme.primaryGlow.opacity(0.9))
-                    }
-                    .frame(width: 52, height: 52)
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top, spacing: 14) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(LiquidTheme.primary.opacity(0.10))
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(LiquidTheme.primaryGlow.opacity(0.20), lineWidth: 1)
+                    Image(systemName: "camera.on.rectangle")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(LiquidTheme.primaryGlow.opacity(0.9))
+                }
+                .frame(width: 52, height: 52)
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(title)
-                            .font(.system(.title3, design: .rounded).weight(.semibold))
-                            .foregroundStyle(LiquidTheme.primary)
-                        Text(subtitle)
-                            .font(.system(.body))
-                            .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
-                    Spacer(minLength: 0)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(title)
+                        .font(.system(.title3, design: .rounded).weight(.semibold))
+                        .foregroundStyle(LiquidTheme.primary)
+                    Text(subtitle)
+                        .font(.system(.body))
+                        .foregroundStyle(LiquidTheme.onSurfaceVariant.opacity(0.9))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
-                    LiquidGlassPillButton(
-                        systemImage: "camera.fill",
-                        title: "LAUNCH SMART SCANNER",
-                        onTap: onTap
-                    )
+                Spacer(minLength: 0)
             }
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .liquidGlass(cornerRadius: 26)
-            .overlay(alignment: .topTrailing) {
-                Text("PREMIUM")
-                    .font(.system(.caption2).weight(.bold))
-                    .tracking(2.0)
-                    .foregroundStyle(LiquidTheme.onSurface)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(LiquidTheme.primaryGlow.opacity(0.95), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .padding(.trailing, 18)
-                    .offset(y: -10)
-            }
+
+            LiquidGlassPillButton(
+                systemImage: "camera.fill",
+                title: "LAUNCH SMART SCANNER",
+                onTap: onPillTap
+            )
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(title). Premium option.")
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .liquidGlass(cornerRadius: 26)
+        .overlay(alignment: .topTrailing) {
+            Text("PREMIUM")
+                .font(.system(.caption2).weight(.bold))
+                .tracking(2.0)
+                .foregroundStyle(LiquidTheme.onSurface)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(LiquidTheme.primaryGlow.opacity(0.95), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .padding(.trailing, 18)
+                .offset(y: -10)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

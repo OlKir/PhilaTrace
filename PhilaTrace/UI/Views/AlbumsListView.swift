@@ -32,7 +32,6 @@ struct AlbumsListView: View {
                             NavigationLink {
                                 AlbumDetailsView(album: album)
                                     .navigationBarTitleDisplayMode(.inline)
-                                    .toolbarBackground(.hidden, for: .navigationBar)
                             } label: {
                                 AlbumCardView(
                                     album: album,
